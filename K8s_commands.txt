@@ -1,6 +1,29 @@
-For rollout restart of all services:
+1. For rollout restart of all services:
 -- kubectl rollout restart deployment -n cctns-citizen-qa
 
-For auto-sync disable of all applications in ARGOCD:
+2. For auto-sync disable of all applications in ARGOCD:
 -- for app in $(kubectl get applications -n argocd -o jsonpath='{range .items[?(@.spec.destination.namespace=="cctns-qa")]}{.metadata.name}{"\n"}{end}'); do echo "Disabling auto-sync: $app"; kubectl patch application "$app" -n argocd --type merge -p '{"spec":{"syncPolicy":null}}'; done
 
+3. Sort by creation time
+-- kubectl get pods --sort-by=.metadata.creationTimestamp
+
+4. Sort events by Time:
+-- kubectl get events --sort-by=.metadata.creationTimestamp
+
+5. Delete all completed pods
+-- kubectl delete pod --field-selector=status.phase==Succeeded
+
+6. Delete evicted pods
+-- kubectl get pods | grep Evicted | awk '{print $1}' | xargs kubectl delete pod
+
+7. Restart every deployment
+-- kubectl rollout restart deployment -A
+
+8. Scale all deployments
+-- kubectl scale deployment --all --replicas=0 -n default
+
+9. Find pods on node
+-- kubectl get pods -A -o wide | grep worker01
+
+10. Show images in cluster
+-- kubectl get pods -A -o jsonpath="{..image}" | tr -s '[[:space:]]' '\n' | sort | uniq
