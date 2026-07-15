@@ -1,0 +1,44 @@
+If you want to install a Nagios agent on RHEL 9, the recommended agent is NCPA (Nagios Cross-Platform Agent). You can also use NRPE if your Nagios server is configured for it.
+
+Install NCPA (Recommended) on RHEL
+1. Download the RPM
+wget https://assets.nagios.com/downloads/ncpa3/ncpa-latest-1.x86_64.rpm
+dnf install --disablerepo="*" ./ncpa-latest-1.x86_64.rpm
+sudo vi /usr/local/ncpa/etc/ncpa.cfg or below steps
+echo "Configuring allowed hosts..."
+sed -i -E 's|^#?[[:space:]]*allowed_hosts[[:space:]]*=.*|allowed_hosts = 10.212.107.119|' /usr/local/ncpa/etc/ncpa.cfg
+echo "Configuring API token..."
+sed -i -E 's|^#?[[:space:]]*community_string[[:space:]]*=.*|community_string = Ncrb@2026|' /usr/local/ncpa/etc/ncpa.cfg
+
+#Start the service
+systemctl enable ncpa 
+systemctl start ncpa
+
+
+
+
+
+2. Install On Ubuntu
+sudo vi /usr/local/ncpa/etc/ncpa.cfg or below steps
+dnf install ./ncpa-latest-1.x86_64.rpm
+sudo dpkg -i ncpa-latest-1.amd64.deb
+sudo systemctl status ncpa
+echo "Configuring allowed hosts..."
+sed -i -E 's|^#?[[:space:]]*allowed_hosts[[:space:]]*=.*|allowed_hosts = 10.212.107.119|' /usr/local/ncpa/etc/ncpa.cfg
+echo "Configuring API token..."
+sed -i -E 's|^#?[[:space:]]*community_string[[:space:]]*=.*|community_string = Ncrb@2026|' /usr/local/ncpa/etc/ncpa.cfg
+
+#Start the service
+systemctl enable ncpa 
+systemctl start ncpa
+
+5. Open the firewall
+sudo firewall-cmd --permanent --add-port=5693/tcp
+sudo firewall-cmd --reload
+
+
+
+
+
+wget -e use_proxy=yes      -e http_proxy=http://192.0.2.12:8080      -e https_proxy=http://192.0.2.12:8080      https://assets.nagios.com/downloads/ncpa3/ncpa-latest-1.amd64.deb
+Or transfer the RPM from your Nagios server if the machine has no internet access.
