@@ -1,0 +1,6 @@
+For rollout restart of all services:
+-- kubectl rollout restart deployment -n cctns-citizen-qa
+
+For auto-sync disable of all applications in ARGOCD:
+-- for app in $(kubectl get applications -n argocd -o jsonpath='{range .items[?(@.spec.destination.namespace=="cctns-qa")]}{.metadata.name}{"\n"}{end}'); do echo "Disabling auto-sync: $app"; kubectl patch application "$app" -n argocd --type merge -p '{"spec":{"syncPolicy":null}}'; done
+
